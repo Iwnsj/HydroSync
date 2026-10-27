@@ -127,7 +127,7 @@ export default function Weather() {
         </StaggerItem>
 
         {/* 24-hour rain probability bar chart + Rain preemption control */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-3">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <ChartCard
             className="lg:col-span-2"
             title="24-hour rain probability forecast"
@@ -231,7 +231,7 @@ export default function Weather() {
         </StaggerItem>
 
         {/* Temperature & Humidity forecast chart + Preemption log */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-5">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-5">
           <ChartCard
             className="lg:col-span-2"
             title={`Temperature (${units.tempSuffix}) & humidity (%)`}
@@ -255,9 +255,9 @@ export default function Weather() {
             />
           </ChartCard>
 
-          <section className="card flex flex-col p-5 lg:col-span-3" aria-labelledby="preempt-log-heading">
+          <section className="card flex min-w-0 flex-col p-5 lg:col-span-3" aria-labelledby="preempt-log-heading">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <div>
+              <div className="min-w-0">
                 <h2 id="preempt-log-heading" className="section-title">
                   Rain preemption log
                 </h2>
@@ -280,38 +280,67 @@ export default function Weather() {
                 description="When soil needs water while rain probability ≥ threshold, HydroSync logs the skipped cycle here."
               />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="table-base">
-                  <thead>
-                    <tr>
-                      <th scope="col">Timestamp</th>
-                      <th scope="col">Crop</th>
-                      <th scope="col">Forecast vs. Threshold</th>
-                      <th scope="col">Soil moisture</th>
-                      <th scope="col">Est. water saved</th>
-                      <th scope="col">Note</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {preemptions.map((p) => (
-                      <tr key={p.id}>
-                        <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{dateTimeFmt(p.ts)}</td>
-                        <td className="font-medium">{p.crop}</td>
-                        <td className="tabular">
-                          <span className="font-bold text-sky-700 dark:text-sky-300">{p.rainProbability}%</span>{' '}
-                          <span className="text-xs text-slate-400">≥ {p.threshold}%</span>
-                        </td>
-                        <td className="tabular">{p.moistureAvg != null ? `${p.moistureAvg}%` : '—'}</td>
-                        <td className="tabular font-semibold text-emerald-700 dark:text-emerald-300">
-                          ~{Math.round(units.volume(p.savedL))}
+              <>
+                {/* Mobile stacked preemption cards */}
+                <ul className="space-y-2.5 sm:hidden">
+                  {preemptions.map((p) => (
+                    <li
+                      key={p.id}
+                      className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-950/50"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">{p.crop}</span>
+                        <span className="tabular text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                          Saved ~{Math.round(units.volume(p.savedL))}
                           {units.volumeSuffix}
-                        </td>
-                        <td className="text-xs text-slate-500 dark:text-slate-400">{p.note}</td>
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
+                        <span className="tabular">
+                          Rain <strong className="text-sky-700 dark:text-sky-300">{p.rainProbability}%</strong> (≥ {p.threshold}%)
+                        </span>
+                        <span className="tabular">· Moisture {p.moistureAvg != null ? `${p.moistureAvg}%` : '—'}</span>
+                        <span className="text-slate-400">· {dateTimeFmt(p.ts)}</span>
+                      </div>
+                      {p.note && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{p.note}</p>}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Tablet & desktop table */}
+                <div className="hidden overflow-x-auto sm:block">
+                  <table className="table-base">
+                    <thead>
+                      <tr>
+                        <th scope="col">Timestamp</th>
+                        <th scope="col">Crop</th>
+                        <th scope="col">Forecast vs. Threshold</th>
+                        <th scope="col">Soil moisture</th>
+                        <th scope="col">Est. water saved</th>
+                        <th scope="col">Note</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {preemptions.map((p) => (
+                        <tr key={p.id}>
+                          <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{dateTimeFmt(p.ts)}</td>
+                          <td className="font-medium">{p.crop}</td>
+                          <td className="tabular">
+                            <span className="font-bold text-sky-700 dark:text-sky-300">{p.rainProbability}%</span>{' '}
+                            <span className="text-xs text-slate-400">≥ {p.threshold}%</span>
+                          </td>
+                          <td className="tabular">{p.moistureAvg != null ? `${p.moistureAvg}%` : '—'}</td>
+                          <td className="tabular font-semibold text-emerald-700 dark:text-emerald-300">
+                            ~{Math.round(units.volume(p.savedL))}
+                            {units.volumeSuffix}
+                          </td>
+                          <td className="text-xs text-slate-500 dark:text-slate-400">{p.note}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </section>
         </StaggerItem>

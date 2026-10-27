@@ -20,7 +20,7 @@ export default function AppLayout() {
   }, [location.pathname])
 
   return (
-    <div className="min-h-dvh lg:pl-64">
+    <div className="min-h-dvh w-full max-w-full overflow-x-clip lg:pl-64">
       <a
         href="#main"
         className="sr-only z-[80] rounded-lg bg-brand-600 px-4 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
@@ -32,7 +32,7 @@ export default function AppLayout() {
         <Sidebar />
       </div>
 
-      <div className="flex min-h-dvh flex-col">
+      <div className="flex min-h-dvh min-w-0 flex-col">
         <div className={`sticky top-0 z-30 ${enabled ? 'animate-nav-in' : ''}`}>
           <Header />
           <FallbackBanner />
@@ -41,11 +41,11 @@ export default function AppLayout() {
         <main
           id="main"
           tabIndex={-1}
-          className={`mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-5 outline-none sm:px-6 lg:px-8 lg:pb-12 lg:pt-7 ${
+          className={`mx-auto w-full min-w-0 max-w-7xl flex-1 px-4 pb-28 pt-5 outline-none sm:px-6 lg:px-8 lg:pb-12 lg:pt-7 ${
             enabled ? 'animate-main-in' : ''
           }`}
         >
-          <div key={location.pathname} className={enabled ? 'animate-page-in' : ''}>
+          <div key={location.pathname} className={`min-w-0 ${enabled ? 'animate-page-in' : ''}`}>
             <Outlet />
           </div>
         </main>

@@ -159,9 +159,9 @@ export default function DeviceControl() {
               aria-label="Active control mode details"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-center gap-2.5">
+                <div className="flex min-w-0 items-start gap-2.5">
                   <span
-                    className={`grid h-10 w-10 place-items-center rounded-2xl ${
+                    className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl ${
                       isAuto
                         ? 'bg-brand-600 text-white dark:bg-brand-500 dark:text-slate-950'
                         : 'bg-amber-500 text-white'
@@ -169,7 +169,7 @@ export default function DeviceControl() {
                   >
                     {isAuto ? <Bot className="h-5 w-5" aria-hidden="true" /> : <Hand className="h-5 w-5" aria-hidden="true" />}
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="section-title">
                         {isAuto ? 'Automatic mode active · ESP32 edge rules' : 'Manual mode active · Direct operator control'}
@@ -178,7 +178,7 @@ export default function DeviceControl() {
                         {crop.emoji} {crop.name} ({stage.label})
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                       {isAuto
                         ? 'Manual valve toggles are locked so operator taps cannot conflict with autonomous rules.'
                         : 'Automatic rules are paused. Every valve action asks for confirmation and is logged below.'}
@@ -191,7 +191,7 @@ export default function DeviceControl() {
               </div>
 
               {/* Active rule cards */}
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <RuleStep
                   icon={Droplets}
                   title="1. Open irrigation"
@@ -226,7 +226,7 @@ export default function DeviceControl() {
         </StaggerItem>
 
         {/* Valve cards + manual run timer */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-2">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {loading
             ? VALVES.map((v) => <CardSkeleton key={v.id} lines={3} />)
             : live &&
@@ -302,16 +302,16 @@ export default function DeviceControl() {
         </StaggerItem>
 
         {/* Fertigation cycle controller + Command log */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-5">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-5">
           {/* Fertigation control */}
-          <section className="card flex flex-col justify-between p-5 lg:col-span-2" aria-labelledby="fert-heading">
+          <section className="card flex min-w-0 flex-col justify-between p-5 lg:col-span-2" aria-labelledby="fert-heading">
             <div>
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="grid h-10 w-10 place-items-center rounded-2xl bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-500/10 dark:text-fuchsia-300">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex min-w-0 items-start gap-2.5">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-500/10 dark:text-fuchsia-300">
                     <FlaskConical className="h-5 w-5" aria-hidden="true" />
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <h2 id="fert-heading" className="section-title">
                       Fertigation controller
                     </h2>
@@ -330,18 +330,18 @@ export default function DeviceControl() {
               ) : (
                 <>
                   <div className="mt-5 grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-3.5 dark:bg-slate-950/60">
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-slate-500 dark:text-slate-400">Current EC / TDS</p>
-                      <p className="mt-1 text-2xl font-bold">
+                      <p className="mt-1 text-xl font-bold sm:text-2xl">
                         <AnimatedNumber value={live.ec} decimals={2} suffix=" mS/cm" />
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
                         ≈ <AnimatedNumber value={ecToPpm(live.ec, units.nutrient.factor)} decimals={0} suffix=" ppm" /> (×{units.nutrient.factor})
                       </p>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-slate-500 dark:text-slate-400">Target EC / TDS</p>
-                      <p className="mt-1 text-2xl font-bold text-brand-700 dark:text-brand-300">
+                      <p className="mt-1 text-xl font-bold text-brand-700 sm:text-2xl dark:text-brand-300">
                         <AnimatedNumber value={fert ? fert.targetEc : effectiveTargetEc} decimals={2} suffix=" mS/cm" />
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -438,7 +438,7 @@ export default function DeviceControl() {
           </section>
 
           {/* Command log */}
-          <section className="card flex flex-col p-5 lg:col-span-3" aria-labelledby="cmd-log-heading">
+          <section className="card flex min-w-0 flex-col p-5 lg:col-span-3" aria-labelledby="cmd-log-heading">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 id="cmd-log-heading" className="section-title flex items-center gap-2">
                 <Terminal className="h-5 w-5 text-slate-500" aria-hidden="true" /> Command log
@@ -453,40 +453,69 @@ export default function DeviceControl() {
             ) : commands.length === 0 ? (
               <EmptyState compact icon={Terminal} title="No commands recorded" description="Valve and mode commands will appear here." />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="table-base">
-                  <thead>
-                    <tr>
-                      <th scope="col">Time</th>
-                      <th scope="col">Command</th>
-                      <th scope="col">Source</th>
-                      <th scope="col">Latency</th>
-                      <th scope="col">Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {commands.slice(0, 15).map((c) => {
-                      const ok = c.result === 'Success'
-                      return (
-                        <tr key={c.id}>
-                          <td className="whitespace-nowrap font-mono text-xs text-slate-500 dark:text-slate-400">{timeFmt(c.ts)}</td>
-                          <td>
-                            <p className="font-semibold text-slate-800 dark:text-slate-100">{c.command}</p>
-                            {c.detail && <p className="text-xs text-slate-500 dark:text-slate-400">{c.detail}</p>}
-                          </td>
-                          <td className="whitespace-nowrap text-xs text-slate-600 dark:text-slate-300">{c.source}</td>
-                          <td className="whitespace-nowrap tabular text-xs text-slate-500 dark:text-slate-400">
-                            {c.latencyMs != null ? `${c.latencyMs} ms` : '—'}
-                          </td>
-                          <td className="whitespace-nowrap">
-                            <StatusPill status={ok ? 'ok' : 'bad'} icon={ok ? CheckCircle2 : XCircle} label={c.result} />
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <>
+                {/* Mobile stacked command cards */}
+                <ul className="space-y-2.5 sm:hidden">
+                  {commands.slice(0, 15).map((c) => {
+                    const ok = c.result === 'Success'
+                    return (
+                      <li
+                        key={c.id}
+                        className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-950/50"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="min-w-0 flex-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                            {c.command}
+                          </p>
+                          <StatusPill status={ok ? 'ok' : 'bad'} icon={ok ? CheckCircle2 : XCircle} label={c.result} />
+                        </div>
+                        {c.detail && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{c.detail}</p>}
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                          <span className="font-mono">{timeFmt(c.ts)}</span>
+                          <span>· {c.source}</span>
+                          {c.latencyMs != null && <span className="tabular">· {c.latencyMs} ms</span>}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {/* Tablet & desktop table */}
+                <div className="hidden overflow-x-auto sm:block">
+                  <table className="table-base">
+                    <thead>
+                      <tr>
+                        <th scope="col">Time</th>
+                        <th scope="col">Command</th>
+                        <th scope="col">Source</th>
+                        <th scope="col">Latency</th>
+                        <th scope="col">Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {commands.slice(0, 15).map((c) => {
+                        const ok = c.result === 'Success'
+                        return (
+                          <tr key={c.id}>
+                            <td className="whitespace-nowrap font-mono text-xs text-slate-500 dark:text-slate-400">{timeFmt(c.ts)}</td>
+                            <td>
+                              <p className="font-semibold text-slate-800 dark:text-slate-100">{c.command}</p>
+                              {c.detail && <p className="text-xs text-slate-500 dark:text-slate-400">{c.detail}</p>}
+                            </td>
+                            <td className="whitespace-nowrap text-xs text-slate-600 dark:text-slate-300">{c.source}</td>
+                            <td className="whitespace-nowrap tabular text-xs text-slate-500 dark:text-slate-400">
+                              {c.latencyMs != null ? `${c.latencyMs} ms` : '—'}
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <StatusPill status={ok ? 'ok' : 'bad'} icon={ok ? CheckCircle2 : XCircle} label={c.result} />
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </section>
         </StaggerItem>

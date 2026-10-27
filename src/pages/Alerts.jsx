@@ -103,9 +103,9 @@ export default function Alerts() {
       )}
 
       <Stagger className="space-y-6">
-        <StaggerItem className="grid gap-4 lg:grid-cols-5">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-5">
           {/* Alert feed */}
-          <section className="card flex flex-col p-5 lg:col-span-3" aria-labelledby="alert-feed-heading">
+          <section className="card flex min-w-0 flex-col p-5 lg:col-span-3" aria-labelledby="alert-feed-heading">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h2 id="alert-feed-heading" className="section-title">
@@ -141,7 +141,7 @@ export default function Alerts() {
           </section>
 
           {/* Alert thresholds & GSM recipient settings */}
-          <section className="card flex flex-col justify-between p-5 lg:col-span-2" aria-labelledby="alert-settings-heading">
+          <section className="card flex min-w-0 flex-col justify-between p-5 lg:col-span-2" aria-labelledby="alert-settings-heading">
             <div className="space-y-5">
               <div>
                 <h2 id="alert-settings-heading" className="section-title flex items-center gap-2">
@@ -290,35 +290,61 @@ export default function Alerts() {
           ) : smsLog.length === 0 ? (
             <EmptyState compact icon={MessageSquare} title="No SMS messages sent yet" description="Warning and critical alerts will dispatch SMS messages to your recipient numbers." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table-base">
-                <thead>
-                  <tr>
-                    <th scope="col">Timestamp</th>
-                    <th scope="col">Recipient</th>
-                    <th scope="col">Message</th>
-                    <th scope="col">Module</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {smsLog.slice(0, 25).map((s) => {
-                    const sent = s.status === 'Sent'
-                    return (
-                      <tr key={s.id}>
-                        <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{dateTimeFmt(s.ts)}</td>
-                        <td className="whitespace-nowrap font-mono text-xs font-semibold">{s.to}</td>
-                        <td className="max-w-lg text-sm text-slate-700 dark:text-slate-200">{s.message}</td>
-                        <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{s.module}</td>
-                        <td className="whitespace-nowrap">
-                          <StatusPill status={sent ? 'ok' : 'bad'} icon={sent ? CheckCircle2 : XCircle} label={s.status} />
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Mobile stacked SMS log */}
+              <ul className="space-y-2.5 sm:hidden">
+                {smsLog.slice(0, 25).map((s) => {
+                  const sent = s.status === 'Sent'
+                  return (
+                    <li
+                      key={s.id}
+                      className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-950/50"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-100">{s.to}</span>
+                        <StatusPill status={sent ? 'ok' : 'bad'} icon={sent ? CheckCircle2 : XCircle} label={s.status} />
+                      </div>
+                      <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-200">{s.message}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-slate-500 dark:text-slate-400">
+                        <span>{dateTimeFmt(s.ts)}</span>
+                        <span>· {s.module}</span>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+
+              {/* Tablet & desktop table */}
+              <div className="hidden overflow-x-auto sm:block">
+                <table className="table-base">
+                  <thead>
+                    <tr>
+                      <th scope="col">Timestamp</th>
+                      <th scope="col">Recipient</th>
+                      <th scope="col">Message</th>
+                      <th scope="col">Module</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {smsLog.slice(0, 25).map((s) => {
+                      const sent = s.status === 'Sent'
+                      return (
+                        <tr key={s.id}>
+                          <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{dateTimeFmt(s.ts)}</td>
+                          <td className="whitespace-nowrap font-mono text-xs font-semibold">{s.to}</td>
+                          <td className="max-w-lg text-sm text-slate-700 dark:text-slate-200">{s.message}</td>
+                          <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{s.module}</td>
+                          <td className="whitespace-nowrap">
+                            <StatusPill status={sent ? 'ok' : 'bad'} icon={sent ? CheckCircle2 : XCircle} label={s.status} />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </StaggerItem>
       </Stagger>

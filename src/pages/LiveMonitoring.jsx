@@ -129,7 +129,7 @@ export default function LiveMonitoring() {
           </Stagger>
         </StaggerItem>
 
-        <StaggerItem className="grid gap-4 lg:grid-cols-2">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <ChartCard
             title="Soil moisture per sensor"
             subtitle="Last 5 minutes · shaded band = crop target"

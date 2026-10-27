@@ -141,7 +141,7 @@ export default function Connectivity() {
           <h2 id="conn-modes-heading" className="section-title mb-3">
             Select connection mode
           </h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {CONNECTION_MODES.map((m) => {
               const active = mode === m.id
               const Icon = m.icon
@@ -184,13 +184,13 @@ export default function Connectivity() {
         </StaggerItem>
 
         {/* Local Hotspot direct IP config + Live link diagnostics */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-5">
-          <section className="card p-5 lg:col-span-2" aria-labelledby="local-ip-heading">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+          <section className="card min-w-0 p-5 lg:col-span-2" aria-labelledby="local-ip-heading">
+            <div className="flex items-start gap-2.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300">
                 <Router className="h-5 w-5" aria-hidden="true" />
               </span>
-              <div>
+              <div className="min-w-0">
                 <h2 id="local-ip-heading" className="section-title">
                   Local ESP32 Hotspot IP
                 </h2>
@@ -260,13 +260,13 @@ export default function Connectivity() {
           </section>
 
           {/* Resolved API endpoints & one-line switch preview */}
-          <section className="card p-5 lg:col-span-3" aria-labelledby="endpoints-heading">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+          <section className="card min-w-0 p-5 lg:col-span-3" aria-labelledby="endpoints-heading">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="flex min-w-0 items-start gap-2.5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                   <Code2 className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <div>
+                <div className="min-w-0">
                   <h2 id="endpoints-heading" className="section-title">
                     Resolved endpoints for active mode ({mode})
                   </h2>
@@ -278,7 +278,33 @@ export default function Connectivity() {
               <Badge tone={USE_MOCK ? 'info' : 'ok'}>{USE_MOCK ? 'Mock simulator active' : 'Live HTTP/WS'}</Badge>
             </div>
 
-            <div className="mt-4 overflow-x-auto">
+            {/* Mobile stacked endpoint cards */}
+            <ul className="mt-4 space-y-2 sm:hidden">
+              {[
+                { call: 'getLiveTelemetry()', method: 'GET', url: endpoint('telemetry', {}, mode) },
+                { call: 'subscribe(cb)', method: 'WS / Poll', url: realtimeUrl() },
+                { call: 'sendValveCommand(id, state)', method: 'POST', url: endpoint('valve', { valve: 'irrigation' }, mode) },
+                { call: 'getHistory(range)', method: 'GET', url: endpoint('history', {}, mode) },
+                { call: 'getWeather()', method: 'GET', url: endpoint('weather', {}, mode) },
+                { call: 'syncDeviceConfig(cfg)', method: 'PUT', url: endpoint('config', {}, mode) },
+              ].map((row) => (
+                <li
+                  key={row.call}
+                  className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-2.5 font-mono text-xs dark:border-slate-800 dark:bg-slate-950/50"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-slate-800 dark:text-slate-100">{row.call}</span>
+                    <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      {row.method}
+                    </span>
+                  </div>
+                  <p className="mt-1 break-all text-brand-700 dark:text-brand-300">{row.url}</p>
+                </li>
+              ))}
+            </ul>
+
+            {/* Tablet & desktop table */}
+            <div className="mt-4 hidden overflow-x-auto sm:block">
               <table className="table-base">
                 <thead>
                   <tr>
@@ -291,38 +317,38 @@ export default function Connectivity() {
                   <tr>
                     <td>getLiveTelemetry()</td>
                     <td>GET</td>
-                    <td className="text-brand-700 dark:text-brand-300">{endpoint('telemetry', {}, mode)}</td>
+                    <td className="break-all text-brand-700 dark:text-brand-300">{endpoint('telemetry', {}, mode)}</td>
                   </tr>
                   <tr>
                     <td>subscribe(cb)</td>
                     <td>WS / Poll</td>
-                    <td className="text-brand-700 dark:text-brand-300">{realtimeUrl()}</td>
+                    <td className="break-all text-brand-700 dark:text-brand-300">{realtimeUrl()}</td>
                   </tr>
                   <tr>
                     <td>sendValveCommand(id, state)</td>
                     <td>POST</td>
-                    <td className="text-brand-700 dark:text-brand-300">{endpoint('valve', { valve: 'irrigation' }, mode)}</td>
+                    <td className="break-all text-brand-700 dark:text-brand-300">{endpoint('valve', { valve: 'irrigation' }, mode)}</td>
                   </tr>
                   <tr>
                     <td>getHistory(range)</td>
                     <td>GET</td>
-                    <td className="text-brand-700 dark:text-brand-300">{endpoint('history', {}, mode)}</td>
+                    <td className="break-all text-brand-700 dark:text-brand-300">{endpoint('history', {}, mode)}</td>
                   </tr>
                   <tr>
                     <td>getWeather()</td>
                     <td>GET</td>
-                    <td className="text-brand-700 dark:text-brand-300">{endpoint('weather', {}, mode)}</td>
+                    <td className="break-all text-brand-700 dark:text-brand-300">{endpoint('weather', {}, mode)}</td>
                   </tr>
                   <tr>
                     <td>syncDeviceConfig(cfg)</td>
                     <td>PUT</td>
-                    <td className="text-brand-700 dark:text-brand-300">{endpoint('config', {}, mode)}</td>
+                    <td className="break-all text-brand-700 dark:text-brand-300">{endpoint('config', {}, mode)}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-3 break-all text-xs text-slate-500 dark:text-slate-400">
               Active base URL: <code className="font-mono font-semibold">{baseUrl(mode)}</code>
             </p>
           </section>

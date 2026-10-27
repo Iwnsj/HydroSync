@@ -213,7 +213,7 @@ export default function History() {
         </StaggerItem>
 
         {/* Historical charts for every sensor */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-2">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <ChartCard
             className="lg:col-span-2"
             title="Historical soil moisture (Zones 1–3)"
@@ -310,54 +310,96 @@ export default function History() {
           ) : filteredEvents.length === 0 ? (
             <EmptyState compact icon={HistoryIcon} title="No events in this date range" description="Try widening the selected date range." />
           ) : (
-            <div className="max-h-[480px] overflow-auto">
-              <table className="table-base">
-                <thead>
-                  <tr>
-                    <th scope="col">Start time</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Duration</th>
-                    <th scope="col">Volume ({units.volumeSuffix.trim()})</th>
-                    <th scope="col">Trigger reason</th>
-                    <th scope="col">Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredEvents.slice(0, 80).map((e) => {
-                    const isFert = e.type === 'fertigation'
-                    const triggerTone = e.trigger === 'Auto' ? 'brand' : e.trigger === 'Manual' ? 'warn' : 'info'
-                    return (
-                      <tr key={e.id}>
-                        <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{dateTimeFmt(e.start)}</td>
-                        <td className="whitespace-nowrap">
-                          <span className="inline-flex items-center gap-1.5 font-semibold">
-                            {isFert ? (
-                              <FlaskConical className="h-4 w-4 text-fuchsia-500" aria-hidden="true" />
-                            ) : (
-                              <Droplets className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-                            )}
-                            {isFert ? 'Fertigation' : 'Irrigation'}
-                          </span>
-                        </td>
-                        <td className="whitespace-nowrap tabular">{formatDuration(e.durationSec)}</td>
-                        <td className="whitespace-nowrap tabular font-semibold">
+            <>
+              {/* Mobile stacked event cards */}
+              <ul className="max-h-[480px] space-y-2.5 overflow-y-auto pr-1 sm:hidden">
+                {filteredEvents.slice(0, 80).map((e) => {
+                  const isFert = e.type === 'fertigation'
+                  const triggerTone = e.trigger === 'Auto' ? 'brand' : e.trigger === 'Manual' ? 'warn' : 'info'
+                  return (
+                    <li
+                      key={e.id}
+                      className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-950/50"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-1.5 text-sm font-semibold">
+                          {isFert ? (
+                            <FlaskConical className="h-4 w-4 text-fuchsia-500" aria-hidden="true" />
+                          ) : (
+                            <Droplets className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+                          )}
+                          {isFert ? 'Fertigation' : 'Irrigation'}
+                        </span>
+                        <Badge tone={triggerTone}>{e.trigger}</Badge>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
+                        <span className="tabular font-semibold">
                           {units.volume(e.volumeL).toFixed(isFert ? 2 : units.volumeDecimals)}
                           {units.volumeSuffix}
-                        </td>
-                        <td className="whitespace-nowrap">
-                          <Badge tone={triggerTone}>{e.trigger}</Badge>
-                        </td>
-                        <td className="text-xs text-slate-500 dark:text-slate-400">
-                          {isFert && e.finalEc != null
-                            ? `Final EC ${e.finalEc.toFixed(2)} mS/cm (target ${e.targetEc?.toFixed(2) ?? '—'}, accuracy ${e.accuracy ?? '—'}%)`
-                            : 'Main drip line · Zones 1–3'}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </span>
+                        <span className="tabular">· {formatDuration(e.durationSec)}</span>
+                        <span className="text-slate-400">· {dateTimeFmt(e.start)}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        {isFert && e.finalEc != null
+                          ? `Final EC ${e.finalEc.toFixed(2)} mS/cm (target ${e.targetEc?.toFixed(2) ?? '—'}, accuracy ${e.accuracy ?? '—'}%)`
+                          : 'Main drip line · Zones 1–3'}
+                      </p>
+                    </li>
+                  )
+                })}
+              </ul>
+
+              {/* Tablet & desktop table */}
+              <div className="hidden max-h-[480px] overflow-auto sm:block">
+                <table className="table-base">
+                  <thead>
+                    <tr>
+                      <th scope="col">Start time</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Duration</th>
+                      <th scope="col">Volume ({units.volumeSuffix.trim()})</th>
+                      <th scope="col">Trigger reason</th>
+                      <th scope="col">Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEvents.slice(0, 80).map((e) => {
+                      const isFert = e.type === 'fertigation'
+                      const triggerTone = e.trigger === 'Auto' ? 'brand' : e.trigger === 'Manual' ? 'warn' : 'info'
+                      return (
+                        <tr key={e.id}>
+                          <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">{dateTimeFmt(e.start)}</td>
+                          <td className="whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5 font-semibold">
+                              {isFert ? (
+                                <FlaskConical className="h-4 w-4 text-fuchsia-500" aria-hidden="true" />
+                              ) : (
+                                <Droplets className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+                              )}
+                              {isFert ? 'Fertigation' : 'Irrigation'}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap tabular">{formatDuration(e.durationSec)}</td>
+                          <td className="whitespace-nowrap tabular font-semibold">
+                            {units.volume(e.volumeL).toFixed(isFert ? 2 : units.volumeDecimals)}
+                            {units.volumeSuffix}
+                          </td>
+                          <td className="whitespace-nowrap">
+                            <Badge tone={triggerTone}>{e.trigger}</Badge>
+                          </td>
+                          <td className="text-xs text-slate-500 dark:text-slate-400">
+                            {isFert && e.finalEc != null
+                              ? `Final EC ${e.finalEc.toFixed(2)} mS/cm (target ${e.targetEc?.toFixed(2) ?? '—'}, accuracy ${e.accuracy ?? '—'}%)`
+                              : 'Main drip line · Zones 1–3'}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </StaggerItem>
       </Stagger>

@@ -85,16 +85,16 @@ export default function Settings() {
         }
       />
 
-      <Stagger className="grid gap-4 lg:grid-cols-2">
+      <Stagger className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Device & Backend Endpoints */}
-        <StaggerItem>
+        <StaggerItem className="min-w-0">
           <form onSubmit={handleSaveNetwork} className="card flex h-full flex-col justify-between p-5" noValidate>
             <div className="space-y-4">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
+              <div className="flex items-start gap-2.5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
                   <Server className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <div>
+                <div className="min-w-0">
                   <h2 className="section-title">Device &amp; API endpoints</h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Used by <code className="font-mono">services/apiClient.js</code> when switching from mock to production
@@ -168,14 +168,14 @@ export default function Settings() {
         </StaggerItem>
 
         {/* Units & Nutrient Conversion */}
-        <StaggerItem>
+        <StaggerItem className="min-w-0">
           <section className="card flex h-full flex-col justify-between p-5" aria-labelledby="units-heading">
             <div className="space-y-4">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+              <div className="flex items-start gap-2.5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
                   <Globe className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <div>
+                <div className="min-w-0">
                   <h2 id="units-heading" className="section-title">
                     Units &amp; TDS conversion
                   </h2>
@@ -259,13 +259,13 @@ export default function Settings() {
         </StaggerItem>
 
         {/* Appearance, Motion & Language */}
-        <StaggerItem>
+        <StaggerItem className="min-w-0">
           <section className="card space-y-4 p-5" aria-labelledby="appearance-heading">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+            <div className="flex items-start gap-2.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
                 <Palette className="h-5 w-5" aria-hidden="true" />
               </span>
-              <div>
+              <div className="min-w-0">
                 <h2 id="appearance-heading" className="section-title">
                   Appearance, animations &amp; language
                 </h2>
@@ -339,14 +339,14 @@ export default function Settings() {
         </StaggerItem>
 
         {/* Simulator / QA Diagnostics */}
-        <StaggerItem>
+        <StaggerItem className="min-w-0">
           <section className="card flex h-full flex-col justify-between p-5" aria-labelledby="qa-heading">
             <div className="space-y-4">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <div className="flex items-start gap-2.5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                   <Wrench className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <div>
+                <div className="min-w-0">
                   <h2 id="qa-heading" className="section-title">
                     Simulator &amp; UI diagnostics
                   </h2>

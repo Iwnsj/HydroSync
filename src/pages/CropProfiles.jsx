@@ -167,8 +167,8 @@ export default function CropProfiles() {
         </StaggerItem>
 
         {/* Growth stage selector + active summary */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-3">
-          <section className="card p-5 lg:col-span-1" aria-labelledby="stage-heading">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <section className="card min-w-0 p-5 lg:col-span-1" aria-labelledby="stage-heading">
             <h2 id="stage-heading" className="section-title">
               2. Growth stage
             </h2>
@@ -287,10 +287,10 @@ export default function CropProfiles() {
           </section>
 
           {/* Threshold editor form */}
-          <form onSubmit={handleSave} className="card flex flex-col justify-between p-5 lg:col-span-2" noValidate>
+          <form onSubmit={handleSave} className="card flex min-w-0 flex-col justify-between p-5 lg:col-span-2" noValidate>
             <div>
               <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
+                <div className="min-w-0">
                   <h2 className="section-title">
                     3. Edit thresholds · {crop.emoji} {crop.name} ({stage.label})
                   </h2>
@@ -307,9 +307,9 @@ export default function CropProfiles() {
                 </button>
               </div>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* Soil moisture min / max */}
-                <fieldset className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+                <fieldset className="min-w-0 rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
                   <legend className="flex items-center gap-1.5 px-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
                     <Droplets className="h-4 w-4" aria-hidden="true" /> Soil moisture (%)
                   </legend>
@@ -357,7 +357,7 @@ export default function CropProfiles() {
                 </fieldset>
 
                 {/* EC / TDS target */}
-                <fieldset className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+                <fieldset className="min-w-0 rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
                   <legend className="flex items-center gap-1.5 px-1 text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
                     <Zap className="h-4 w-4" aria-hidden="true" /> EC / TDS target
                   </legend>
@@ -464,7 +464,44 @@ export default function CropProfiles() {
                 <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   All growth stages for {crop.name}
                 </h3>
-                <div className="mt-2 overflow-x-auto">
+
+                {/* Mobile stage cards */}
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:hidden">
+                  {GROWTH_STAGES.map((g) => {
+                    const s = crop.stages[g.id]
+                    const active = g.id === stageId
+                    return (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => setStage(g.id)}
+                        className={`flex flex-col gap-1.5 rounded-xl border p-3 text-left text-xs transition-colors ${
+                          active
+                            ? 'border-brand-500 bg-brand-50/70 dark:border-brand-400 dark:bg-brand-500/10'
+                            : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2 font-semibold text-sm text-slate-900 dark:text-slate-100">
+                          <span>
+                            {g.emoji} {g.label}
+                          </span>
+                          {active && <span className="text-xs font-bold text-brand-600 dark:text-brand-400">Active</span>}
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-slate-600 dark:text-slate-300">
+                          <span className="tabular">💧 Moisture: <strong>{s.moistureMin}–{s.moistureMax}%</strong></span>
+                          <span className="tabular">⚡ EC: <strong>{s.ecMin.toFixed(1)}–{s.ecMax.toFixed(1)} mS/cm</strong></span>
+                          <span className="tabular">🧪 TDS: <strong>{Math.round(ecToPpm(s.ecMin, factor))}–{Math.round(ecToPpm(s.ecMax, factor))} ppm</strong></span>
+                          <span className="tabular">⏱ Max run: <strong>{s.irrigationMin} min</strong></span>
+                          <span className="tabular">🌱 Dose: <strong>Every {s.fertigationEveryDays} d</strong></span>
+                          <span className="tabular">🌧 Rain skip: <strong>≥ {s.rainThreshold}%</strong></span>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Tablet & desktop table */}
+                <div className="mt-2 hidden overflow-x-auto sm:block">
                   <table className="table-base">
                     <thead>
                       <tr>

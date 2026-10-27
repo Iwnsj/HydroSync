@@ -139,7 +139,7 @@ export default function Performance() {
         </StaggerItem>
 
         {/* Charts for dependent variables */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-2">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* Water conservation: baseline vs actual */}
           <ChartCard
             className="lg:col-span-2"
@@ -221,13 +221,13 @@ export default function Performance() {
         </StaggerItem>
 
         {/* Sensor health panel + SD card logging status */}
-        <StaggerItem className="grid gap-4 lg:grid-cols-5">
+        <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-5">
           {/* Sensor health */}
-          <section className="card p-5 lg:col-span-3" aria-labelledby="sensor-health-heading">
+          <section className="card min-w-0 p-5 lg:col-span-3" aria-labelledby="sensor-health-heading">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <div>
+              <div className="min-w-0">
                 <h2 id="sensor-health-heading" className="section-title flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-brand-600 dark:text-brand-400" aria-hidden="true" />
+                  <Activity className="h-5 w-5 shrink-0 text-brand-600 dark:text-brand-400" aria-hidden="true" />
                   Sensor health panel
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -239,59 +239,97 @@ export default function Performance() {
             {liveLoading || !live ? (
               <ListSkeleton rows={5} />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="table-base">
-                  <thead>
-                    <tr>
-                      <th scope="col">Sensor</th>
-                      <th scope="col">ESP32 Pin</th>
-                      <th scope="col">Latest reading</th>
-                      <th scope="col">Last reading time</th>
-                      <th scope="col">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SENSORS.map((meta) => {
-                      const reading = live.sensors.find((s) => s.id === meta.id)
-                      const ok = reading?.status === 'ok'
-                      return (
-                        <tr key={meta.id}>
-                          <td>
-                            <p className="font-semibold">{meta.name}</p>
+              <>
+                {/* Mobile sensor health cards */}
+                <ul className="space-y-2.5 sm:hidden">
+                  {SENSORS.map((meta) => {
+                    const reading = live.sensors.find((s) => s.id === meta.id)
+                    const ok = reading?.status === 'ok'
+                    return (
+                      <li
+                        key={meta.id}
+                        className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-950/50"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{meta.name}</p>
                             <p className="text-xs text-slate-500 dark:text-slate-400">{meta.model}</p>
-                          </td>
-                          <td className="whitespace-nowrap font-mono text-xs text-slate-600 dark:text-slate-300">{meta.pin}</td>
-                          <td className="whitespace-nowrap tabular font-bold">
+                          </div>
+                          <StatusPill
+                            status={ok ? 'ok' : 'bad'}
+                            icon={ok ? CheckCircle2 : XCircle}
+                            label={ok ? 'Healthy' : 'Fault'}
+                          />
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <span className="tabular font-bold text-slate-800 dark:text-slate-100">
                             {reading?.value != null ? `${reading.value} ${reading.unit}` : '—'}
-                          </td>
-                          <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">
+                          </span>
+                          <span className="font-mono text-slate-500 dark:text-slate-400">{meta.pin}</span>
+                          <span className="text-slate-400">
                             {reading ? `${timeFmt(reading.lastReadingTs)} (${relativeTime(reading.lastReadingTs, now)})` : '—'}
-                          </td>
-                          <td className="whitespace-nowrap">
-                            <StatusPill
-                              status={ok ? 'ok' : 'bad'}
-                              icon={ok ? CheckCircle2 : XCircle}
-                              label={ok ? 'Healthy' : 'Fault'}
-                            />
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                          </span>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {/* Tablet & desktop table */}
+                <div className="hidden overflow-x-auto sm:block">
+                  <table className="table-base">
+                    <thead>
+                      <tr>
+                        <th scope="col">Sensor</th>
+                        <th scope="col">ESP32 Pin</th>
+                        <th scope="col">Latest reading</th>
+                        <th scope="col">Last reading time</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {SENSORS.map((meta) => {
+                        const reading = live.sensors.find((s) => s.id === meta.id)
+                        const ok = reading?.status === 'ok'
+                        return (
+                          <tr key={meta.id}>
+                            <td>
+                              <p className="font-semibold">{meta.name}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">{meta.model}</p>
+                            </td>
+                            <td className="whitespace-nowrap font-mono text-xs text-slate-600 dark:text-slate-300">{meta.pin}</td>
+                            <td className="whitespace-nowrap tabular font-bold">
+                              {reading?.value != null ? `${reading.value} ${reading.unit}` : '—'}
+                            </td>
+                            <td className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">
+                              {reading ? `${timeFmt(reading.lastReadingTs)} (${relativeTime(reading.lastReadingTs, now)})` : '—'}
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <StatusPill
+                                status={ok ? 'ok' : 'bad'}
+                                icon={ok ? CheckCircle2 : XCircle}
+                                label={ok ? 'Healthy' : 'Fault'}
+                              />
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </section>
 
           {/* SD card logging status & data integrity */}
-          <section className="card flex flex-col justify-between p-5 lg:col-span-2" aria-labelledby="sd-heading">
+          <section className="card flex min-w-0 flex-col justify-between p-5 lg:col-span-2" aria-labelledby="sd-heading">
             <div>
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex min-w-0 items-start gap-2.5">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
                     <HardDrive className="h-5 w-5" aria-hidden="true" />
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <h2 id="sd-heading" className="section-title">
                       SD card logging &amp; data integrity
                     </h2>

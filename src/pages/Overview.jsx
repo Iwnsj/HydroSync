@@ -146,8 +146,8 @@ export default function Overview() {
       </StaggerItem>
 
       {/* Valves + rain */}
-      <StaggerItem className="grid gap-4 lg:grid-cols-3">
-        <section className="grid gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-1 xl:grid-cols-2" aria-label="Valve status">
+      <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-1 xl:grid-cols-2" aria-label="Valve status">
           {loading || error
             ? VALVES.map((v) => (
                 <div key={v.id} className="card p-4">
@@ -177,7 +177,7 @@ export default function Overview() {
       </StaggerItem>
 
       {/* Mini chart + alerts */}
-      <StaggerItem className="grid gap-4 lg:grid-cols-3">
+      <StaggerItem className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <ChartCard
           className="lg:col-span-2"
           title="Soil moisture & nutrients"

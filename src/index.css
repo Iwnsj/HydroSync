@@ -6,9 +6,20 @@
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: clip;
   }
   body {
     @apply bg-slate-50 font-sans text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  fieldset {
+    min-width: 0;
+  }
+  /* Default single-column grids to minmax(0, 1fr) so wide children (tables/pre) cannot blow out mobile width */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
   }
   :focus-visible {
     @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-950;
@@ -20,7 +31,7 @@
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card dark:border-slate-800 dark:bg-slate-900;
+    @apply min-w-0 max-w-full rounded-2xl border border-slate-200/80 bg-white shadow-card dark:border-slate-800 dark:bg-slate-900;
   }
   /* Subtle hover lift on desktop only (transform + shadow). */
   .card-hover {
